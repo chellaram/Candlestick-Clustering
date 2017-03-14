@@ -12,7 +12,7 @@ import numpy as np
 from scipy.cluster.hierarchy import cophenet
 from scipy.spatial.distance import pdist
 
-data = pd.read_csv('C:\Users\Chella Rm\Documents\GitHub\Candlestick-Clustering\infy.csv',index_col = 0)
+data = pd.read_csv('C:\Users\chellar\Downloads\Candlestick-Clustering-master\infy.csv',index_col = 0)
 
 # PRE-PROCESSING
 
@@ -61,17 +61,24 @@ print c
 
 
 
+def recursor(idx,data):
+    
+    if int(data[0]) > 5303 and int(data[1]) > 5303:
+        recursor(data[0]-5304,df_Z.loc[data[0]-5304])
+        recursor(data[1]-5304,df_Z.loc[data[1]-5304])
+        
+    elif int(data[0]) > 5303 and int(data[1]) < 5304:
+        recursor(data[0]-5304,df_Z.loc[data[0]-5304])
+        print data[1]
+        return
 
-
-
-
-
-
-
-
-
-
-
-
-
+    elif int(data[0]) < 5304 and int(data[1]) > 5303:
+        print data[0]
+        recursor(data[1]-5304,df_Z.loc[data[1]-5304])
+        return
+        
+    else:
+        print data[0]
+        print data[1]
+        return
 
