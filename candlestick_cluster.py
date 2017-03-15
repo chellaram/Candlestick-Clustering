@@ -12,7 +12,7 @@ import numpy as np
 from scipy.cluster.hierarchy import cophenet
 from scipy.spatial.distance import pdist
 
-data = pd.read_csv('C:\Users\chellar\Downloads\Candlestick-Clustering-master\infy.csv',index_col = 0)
+data = pd.read_csv('infy.csv',index_col = 0)
 
 # PRE-PROCESSING
 
@@ -81,4 +81,16 @@ def recursor(idx,data):
         print data[0]
         print data[1]
         return
+        
+df_Z = pd.DataFrame(Z)
+idx_list = df_Z[(df_Z[3]>29) & (df_Z[3]<40)].index.values
+
+for idx in idx_list:
+#    Make recursor return a list and append it to a master list 
+#    This list can then be compared for common elements and eliminated
+
+
+
+
+
 
