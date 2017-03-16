@@ -6,13 +6,13 @@ Created on Wed Mar 08 19:18:59 2017
 """
 
 import pandas as pd 
-from matplotlib import pyplot as plt
-from scipy.cluster.hierarchy import dendrogram, linkage
-import numpy as np
-from scipy.cluster.hierarchy import cophenet
+#from matplotlib import pyplot as plt
+#from scipy.cluster.hierarchy import dendrogram, linkage
+#import numpy as np
+from scipy.cluster.hierarchy import cophenet,linkage
 from scipy.spatial.distance import pdist
 
-data = pd.read_csv('infy.csv',index_col = 0)
+data = pd.read_csv('C:\Users\chellar\Documents\GitHub\Candlestick-Clustering\infy.csv',index_col = 0)
 
 # PRE-PROCESSING
 
@@ -60,35 +60,77 @@ print c
 
 
 
-
-def recursor(idx,data):
+def recursor(ind,df_Z):
     
-    if int(data[0]) > 5303 and int(data[1]) > 5303:
-        recursor(data[0]-5304,df_Z.loc[data[0]-5304])
-        recursor(data[1]-5304,df_Z.loc[data[1]-5304])
+    members = []
+#    diff = len(df_Z)
+    
+    def helper(data):
         
-    elif int(data[0]) > 5303 and int(data[1]) < 5304:
-        recursor(data[0]-5304,df_Z.loc[data[0]-5304])
-        print data[1]
-        return
+        if int(data[0]) > 5303 and int(data[1]) > 5303:
+            helper(df_Z.loc[data[0]-5304])
+            helper(df_Z.loc[data[1]-5304])
+            
+        elif int(data[0]) > 5303 and int(data[1]) < 5304:
+            helper(df_Z.loc[data[0]-5304])
+            members.append(data[1])
+            return
+    
+        elif int(data[0]) < 5304 and int(data[1]) > 5303:
+            members.append(data[0])
+            helper(df_Z.loc[data[1]-5304])
+            return
+            
+        else:
+            members.append(data[0])
+            members.append(data[1])
+            return
+    
+    helper(df_Z.loc[ind])
+    return members
+    
+    
+dfZ = pd.DataFrame(Z)
+min_cluster_size = 29
+max_cluster_size = 100
 
-    elif int(data[0]) < 5304 and int(data[1]) > 5303:
-        print data[0]
-        recursor(data[1]-5304,df_Z.loc[data[1]-5304])
-        return
-        
-    else:
-        print data[0]
-        print data[1]
-        return
-        
-df_Z = pd.DataFrame(Z)
-idx_list = df_Z[(df_Z[3]>29) & (df_Z[3]<40)].index.values
+
+idx_list = dfZ[(dfZ[3]>min_cluster_size ) & (dfZ[3]<max_cluster_size)].index.values
+clust_members_list = []
+
 
 for idx in idx_list:
-#    Make recursor return a list and append it to a master list 
-#    This list can then be compared for common elements and eliminated
+    clust_members_list.append(recursor(int(idx),dfZ))
 
+    
+clust_members_list = [[int(j) for j in i] for i in clust_members_list]
+
+p = clust_members_list
+kill = set()
+
+
+for i,a in enumerate(p):
+    for j,b in enumerate(p):
+        if i!=j:
+            if set(a).intersection(b):
+                if len(a)<len(b):
+                    kill.add(j)
+                else:
+                    kill.add(i)
+
+                    
+idx_range = set(range(0,len(idx_list)))
+clust_indices = list(idx_range - kill)
+
+clusters = [clust_members_list[i] for i in clust_indices]
+
+for i,cluster in enumerate(clusters):
+    trend_df = data.iloc[cluster,:].groupby('Trend').count().loc[[-1,0,1]]['Open']
+    trend = float(trend_df.max())/float(trend_df.sum())
+    which = trend_df.idxmax()
+    print trend,which,len(cluster)
+
+#No apparent pattern was discovered (only 1). Maybe more data can help. Get forex data.
 
 
 
