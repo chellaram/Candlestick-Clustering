@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 08 19:18:59 2017
-
 @author: Chella Ram
 """
 
@@ -12,7 +11,8 @@ import pandas as pd
 from scipy.cluster.hierarchy import cophenet,linkage
 from scipy.spatial.distance import pdist
 
-data = pd.read_csv('C:\Users\chellar\Documents\GitHub\Candlestick-Clustering\infy.csv',index_col = 0)
+scrip = 'ko'
+data = pd.read_csv( scrip + '.csv',index_col = 0)
 
 # PRE-PROCESSING
 
@@ -63,22 +63,22 @@ print c
 def recursor(ind,df_Z):
     
     members = []
-#    diff = len(df_Z)
-    
+    diff = len(df_Z)
+    diff_1 = diff+1
     def helper(data):
         
-        if int(data[0]) > 5303 and int(data[1]) > 5303:
-            helper(df_Z.loc[data[0]-5304])
-            helper(df_Z.loc[data[1]-5304])
+        if int(data[0]) > diff and int(data[1]) > diff:
+            helper(df_Z.loc[data[0]-diff_1])
+            helper(df_Z.loc[data[1]-diff_1])
             
-        elif int(data[0]) > 5303 and int(data[1]) < 5304:
-            helper(df_Z.loc[data[0]-5304])
+        elif int(data[0]) > diff and int(data[1]) < diff_1:
+            helper(df_Z.loc[data[0]-diff_1])
             members.append(data[1])
             return
     
-        elif int(data[0]) < 5304 and int(data[1]) > 5303:
+        elif int(data[0]) < diff_1 and int(data[1]) > diff:
             members.append(data[0])
-            helper(df_Z.loc[data[1]-5304])
+            helper(df_Z.loc[data[1]-diff_1])
             return
             
         else:
@@ -131,8 +131,4 @@ for i,cluster in enumerate(clusters):
     print trend,which,len(cluster)
 
 #No apparent pattern was discovered (only 1). Maybe more data can help. Get forex data.
-
-
-
-
 
